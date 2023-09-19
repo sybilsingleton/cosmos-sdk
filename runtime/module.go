@@ -45,6 +45,7 @@ func ProvideApp() (
 	*AppBuilder,
 	codec.ProtoCodecMarshaler,
 	*baseapp.MsgServiceRouter,
+	*baseapp.GRPCQueryRouter,
 ) {
 	interfaceRegistry := codectypes.NewInterfaceRegistry()
 	amino := codec.NewLegacyAmino()
@@ -54,6 +55,7 @@ func ProvideApp() (
 
 	cdc := codec.NewProtoCodec(interfaceRegistry)
 	msgServiceRouter := baseapp.NewMsgServiceRouter()
+	grpcQueryRouter := baseapp.NewGRPCQueryRouter()
 	app := &AppBuilder{
 		&App{
 			storeKeys:         nil,
@@ -62,10 +64,11 @@ func ProvideApp() (
 			amino:             amino,
 			basicManager:      module.BasicManager{},
 			msgServiceRouter:  msgServiceRouter,
+			grpcQueryRouter:   grpcQueryRouter,
 		},
 	}
 
-	return interfaceRegistry, cdc, amino, app, cdc, msgServiceRouter
+	return interfaceRegistry, cdc, amino, app, cdc, msgServiceRouter, grpcQueryRouter
 }
 
 type AppInputs struct {

@@ -47,6 +47,7 @@ type App struct {
 	basicManager      module.BasicManager
 	baseAppOptions    []BaseAppOption
 	msgServiceRouter  *baseapp.MsgServiceRouter
+	grpcQueryRouter   *baseapp.GRPCQueryRouter
 	appConfig         *appv1alpha1.Config
 	// initChainer is the init chainer function defined by the app config.
 	// this is only required if the chain wants to add special InitChainer logic.
