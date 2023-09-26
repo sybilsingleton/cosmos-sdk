@@ -1,0 +1,72 @@
+diff --git a/baseapp/baseapp.go b/baseapp/baseapp.go
+index 14f2654c51..8e8af492d1 100644
+--- a/baseapp/baseapp.go
++++ b/baseapp/baseapp.go
+@@ -226,6 +226,10 @@ func (app *BaseApp) SetMsgServiceRouter(msgServiceRouter *MsgServiceRouter) {
+ 	app.msgServiceRouter = msgServiceRouter
+ }
+ 
++func (app *BaseApp) SetGRPCQueryRouter(grpcQueryRouter *GRPCQueryRouter) {
++	app.grpcQueryRouter = grpcQueryRouter
++}
++
+ // SetCircuitBreaker sets the circuit breaker for the BaseApp.
+ // The circuit breaker is checked on every message execution to verify if a transaction should be executed or not.
+ func (app *BaseApp) SetCircuitBreaker(cb CircuitBreaker) {
+diff --git a/runtime/app.go b/runtime/app.go
+index b5cfcc54ce..bb73317187 100644
+--- a/runtime/app.go
++++ b/runtime/app.go
+@@ -47,6 +47,7 @@ type App struct {
+ 	basicManager      module.BasicManager
+ 	baseAppOptions    []BaseAppOption
+ 	msgServiceRouter  *baseapp.MsgServiceRouter
++	grpcQueryRouter   *baseapp.GRPCQueryRouter
+ 	appConfig         *appv1alpha1.Config
+ 	// initChainer is the init chainer function defined by the app config.
+ 	// this is only required if the chain wants to add special InitChainer logic.
+diff --git a/runtime/builder.go b/runtime/builder.go
+index 76452e4c51..ac0c3db5e2 100644
+--- a/runtime/builder.go
++++ b/runtime/builder.go
+@@ -37,6 +37,7 @@ func (a *AppBuilder) Build(
+ 
+ 	bApp := baseapp.NewBaseApp(a.app.config.AppName, logger, db, nil, baseAppOptions...)
+ 	bApp.SetMsgServiceRouter(a.app.msgServiceRouter)
++	bApp.SetGRPCQueryRouter(a.app.grpcQueryRouter)
+ 	bApp.SetCommitMultiStoreTracer(traceStore)
+ 	bApp.SetVersion(version.Version)
+ 	bApp.SetInterfaceRegistry(a.app.interfaceRegistry)
+diff --git a/runtime/module.go b/runtime/module.go
+index ed3b5c8c71..aafb61e4a3 100644
+--- a/runtime/module.go
++++ b/runtime/module.go
+@@ -45,6 +45,7 @@ func ProvideApp() (
+ 	*AppBuilder,
+ 	codec.ProtoCodecMarshaler,
+ 	*baseapp.MsgServiceRouter,
++	*baseapp.GRPCQueryRouter,
+ ) {
+ 	interfaceRegistry := codectypes.NewInterfaceRegistry()
+ 	amino := codec.NewLegacyAmino()
+@@ -54,6 +55,7 @@ func ProvideApp() (
+ 
+ 	cdc := codec.NewProtoCodec(interfaceRegistry)
+ 	msgServiceRouter := baseapp.NewMsgServiceRouter()
++	grpcQueryRouter := baseapp.NewGRPCQueryRouter()
+ 	app := &AppBuilder{
+ 		&App{
+ 			storeKeys:         nil,
+@@ -62,10 +64,11 @@ func ProvideApp() (
+ 			amino:             amino,
+ 			basicManager:      module.BasicManager{},
+ 			msgServiceRouter:  msgServiceRouter,
++			grpcQueryRouter:   grpcQueryRouter,
+ 		},
+ 	}
+ 
+-	return interfaceRegistry, cdc, amino, app, cdc, msgServiceRouter
++	return interfaceRegistry, cdc, amino, app, cdc, msgServiceRouter, grpcQueryRouter
+ }
+ 
+ type AppInputs struct {

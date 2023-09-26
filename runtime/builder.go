@@ -37,6 +37,7 @@ func (a *AppBuilder) Build(
 
 	bApp := baseapp.NewBaseApp(a.app.config.AppName, logger, db, nil, baseAppOptions...)
 	bApp.SetMsgServiceRouter(a.app.msgServiceRouter)
+	bApp.SetGRPCQueryRouter(a.app.grpcQueryRouter)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetVersion(version.Version)
 	bApp.SetInterfaceRegistry(a.app.interfaceRegistry)
