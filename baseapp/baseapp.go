@@ -226,6 +226,10 @@ func (app *BaseApp) SetMsgServiceRouter(msgServiceRouter *MsgServiceRouter) {
 	app.msgServiceRouter = msgServiceRouter
 }
 
+func (app *BaseApp) SetGRPCQueryRouter(grpcQueryRouter *GRPCQueryRouter) {
+	app.grpcQueryRouter = grpcQueryRouter
+}
+
 // SetCircuitBreaker sets the circuit breaker for the BaseApp.
 // The circuit breaker is checked on every message execution to verify if a transaction should be executed or not.
 func (app *BaseApp) SetCircuitBreaker(cb CircuitBreaker) {
