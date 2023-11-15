@@ -91,7 +91,6 @@ func ProvideApp(interfaceRegistry codectypes.InterfaceRegistry) (
 	protodesc.Resolver,
 	protoregistry.MessageTypeResolver,
 	error,
-	*baseapp.GRPCQueryRouter,
 ) {
 	protoFiles := proto.HybridResolver
 	protoTypes := protoregistry.GlobalTypes
